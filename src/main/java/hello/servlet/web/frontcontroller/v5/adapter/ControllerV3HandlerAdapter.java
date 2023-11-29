@@ -23,6 +23,7 @@ public class ControllerV3HandlerAdapter implements MyHandlerAdapter {
         ControllerV3 controller = (ControllerV3) handler;
 
         Map<String, String> paramMap = createParamMap(request);
+        //4. 핸들러 실행 (실제 핸들러 호출 = controller호출)
         ModelView mv = controller.process(paramMap);
 
         return mv;

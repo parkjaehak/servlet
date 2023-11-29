@@ -5,6 +5,9 @@ import hello.servlet.web.frontcontroller.MyView;
 import hello.servlet.web.frontcontroller.v3.controller.MemberFormControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberListControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberSaveControllerV3;
+import hello.servlet.web.frontcontroller.v4.controller.MemberFormControllerV4;
+import hello.servlet.web.frontcontroller.v4.controller.MemberListControllerV4;
+import hello.servlet.web.frontcontroller.v4.controller.MemberSaveControllerV4;
 import hello.servlet.web.frontcontroller.v5.adapter.ControllerV3HandlerAdapter;
 import hello.servlet.web.frontcontroller.v5.adapter.ControllerV4HandlerAdapter;
 import jakarta.servlet.ServletException;
@@ -37,9 +40,9 @@ public class FrontControllerServletV5 extends HttpServlet {
         handlerMappingMap.put("/front-controller/v5/v3/members", new MemberListControllerV3());
 
         //v4 추가
-        handlerMappingMap.put("/front-controller/v5/v4/members/new-form", new MemberFormControllerV3());
-        handlerMappingMap.put("/front-controller/v5/v4/members/save", new MemberSaveControllerV3());
-        handlerMappingMap.put("/front-controller/v5/v4/members", new MemberListControllerV3());
+        handlerMappingMap.put("/front-controller/v5/v4/members/new-form", new MemberFormControllerV4());
+        handlerMappingMap.put("/front-controller/v5/v4/members/save", new MemberSaveControllerV4());
+        handlerMappingMap.put("/front-controller/v5/v4/members", new MemberListControllerV4());
     }
 
     private void initHandlerAdapters() {
@@ -49,21 +52,22 @@ public class FrontControllerServletV5 extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        //1. 핸들러조회
         Object handler = getHandler(request);
 
         if(handler == null){
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
+        //2. 핸들러 어댑터 조회
         MyHandlerAdapter adapter = getHandlerAdapter(handler);
-
+        //3. 핸들러 어댑터 실행 -> 5. ModelAndView 반환
         ModelView mv = adapter.handle(request, response, handler);
 
         String viewName = mv.getViewName();
+        //6. viewResolver 호출 -> 7. view 반환
         MyView myView = viewResolver(viewName);
-
+        //8. 뷰 렌더링 (render호출)
         myView.render(mv.getModel(), request,response);
 
     }
@@ -75,6 +79,7 @@ public class FrontControllerServletV5 extends HttpServlet {
 
     private  MyHandlerAdapter getHandlerAdapter(Object handler) {
         for (MyHandlerAdapter adapter : handlerAdapters) {
+            // 2. 핸들러 어댑터 조회 -> support로 어댑터 조회
             if (adapter.supports(handler)) {
                 return adapter;
             }

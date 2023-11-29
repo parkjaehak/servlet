@@ -26,6 +26,7 @@ public class ControllerV4HandlerAdapter implements MyHandlerAdapter {
 
         String viewName = controller.process(paramMap, model);
 
+        // mv객체 만들어 Model 데이터 저장시킨 후 return (타입맞추어 변화해야하기때문)
         ModelView mv = new ModelView(viewName);
         mv.setModel(model);
 
